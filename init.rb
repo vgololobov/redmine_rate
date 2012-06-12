@@ -2,18 +2,27 @@ require 'redmine'
 
 Rails.logger.info 'Starting Rate plugin for Redmine'
 
-ActionDispatch::Callbacks.to_prepare do
-  gem 'lockfile'
+require_dependency 'application_controller'
+require_dependency 'time_entry'
+require_dependency 'users_helper'
 
-  require_dependency 'application_controller'
-  ApplicationController.send(:include, RateHelper)
-  ApplicationController.send(:helper, :rate)
-
-  require_dependency 'time_entry'
-  TimeEntry.send(:include, RateTimeEntryPatch)
-
-  require_dependency 'users_helper'
-  UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+if Gem::Version.new("3.0") > Gem::Version.new(Rails.version) then
+  require 'dispatcher'
+  Distpatcher.to_prepare :redmine_rate do
+    gem 'lockfile'
+    ApplicationController.send(:include, RateHelper)
+    ApplicationController.send(:helper, :rate)
+    TimeEntry.send(:include, RateTimeEntryPatch)
+    UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+  end
+else
+  ActionDispatch::Callbacks.to_prepare do
+    gem 'lockfile'
+    ApplicationController.send(:include, RateHelper)
+    ApplicationController.send(:helper, :rate)
+    TimeEntry.send(:include, RateTimeEntryPatch)
+    UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+  end
 end
 
 # Hooks
@@ -28,7 +37,7 @@ Redmine::Plugin.register :redmine_rate do
   description "The Rate plugin provides an API that can be used to find the rate for a Member of a Project at a specific date.  It also stores historical rate data so calculations will remain correct in the future."
   version '0.3.0'
 
-  requires_redmine :version_or_higher => '2.0.0'
+  requires_redmine :version_or_higher => '1.0.0'
 
   # These settings are set automatically when caching
   settings(:default => {
