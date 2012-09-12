@@ -15,4 +15,4 @@ cs:
   text_load_missing_caches: "Nahrát chybějící mezipaměť"
   text_clear_and_load_all_caches: "Vyčistit a nahrát všechny mezipaměti"
   text_caches_loaded_successfully: "Mezipaměti byly nahrány"
-
+  permission_view_rate: "Zobrazit míry"
