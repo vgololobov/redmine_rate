@@ -1,20 +1,37 @@
 require 'redmine'
 
 # Patches to the Redmine core
-require 'dispatcher'
+require 'dispatcher' unless Rails::VERSION::MAJOR >= 3
 
-Dispatcher.to_prepare :redmine_rate do
-  gem 'lockfile'
+if Rails::VERSION::MAJOR >= 3
+	ActionDispatch::Callbacks.to_prepare do
+		gem 'lockfile'
 
-  require_dependency 'application_controller'
-  ApplicationController.send(:include, RateHelper)
-  ApplicationController.send(:helper, :rate)
+		require_dependency 'application_controller'
+		ApplicationController.send(:include, RateHelper)
+		ApplicationController.send(:helper, :rate)
 
-  require_dependency 'time_entry'
-  TimeEntry.send(:include, RateTimeEntryPatch)
+		require_dependency 'time_entry'
+		TimeEntry.send(:include, RateTimeEntryPatch)
 
-  require_dependency 'users_helper'
-  UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+		require_dependency 'users_helper'
+		UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+	end
+else
+	Dispatcher.to_prepare :redmine_rate do
+		gem 'lockfile'
+
+		require_dependency 'application_controller'
+		ApplicationController.send(:include, RateHelper)
+		ApplicationController.send(:helper, :rate)
+
+		require_dependency 'time_entry'
+		TimeEntry.send(:include, RateTimeEntryPatch)
+
+		require_dependency 'users_helper'
+		UsersHelper.send(:include, RateUsersHelperPatch) unless UsersHelper.included_modules.include?(RateUsersHelperPatch)
+	end
+
 end
 
 # Hooks
