@@ -1,3 +1,3 @@
-ActionController::Routing::Routes.draw do |map|
+RedmineApp::Application.routes.draw do
 	resources :rates
 end
