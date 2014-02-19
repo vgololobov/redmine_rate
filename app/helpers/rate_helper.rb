@@ -53,10 +53,10 @@ module RateHelper
       #####
 
       
-      link_to_remote(caption,
+      link_to(caption,
                      {:update => options[:update] || "content", :url => url_options, :method => options[:method] || :post},
                      {:href => url_for(url_options),
-                       :class => css})
+                       :class => css}, :remote => true)
     end
 
     private
@@ -87,9 +87,9 @@ module RateHelper
       url_options[:user_id] ||= options[:user_id]
       #####
 
-      link_to_remote(caption,
+      link_to(caption,
                      {:update => options[:update] || "content", :url => url_options, :method => options[:method] || :post},
-                     {:href => url_for(url_options)}) +
+                     {:href => url_for(url_options)}, :remote => true) +
         (icon ? nbsp(2) + image_tag(icon) : '')
     end
     
